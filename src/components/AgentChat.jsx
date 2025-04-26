@@ -3,7 +3,7 @@ import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import AgentService from '../services/AgentService';
 
-const VoiceChatbot = ({ apiUrl, apiToken }) => {
+const AgentChat = ({ apiUrl, apiToken }) => {
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'Hello! How can I help you today?', audioUrl: null }
   ]);
@@ -94,4 +94,4 @@ const VoiceChatbot = ({ apiUrl, apiToken }) => {
   );
 };
 
-export default VoiceChatbot;
+export default AgentChat;

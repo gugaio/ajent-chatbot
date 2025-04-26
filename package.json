@@ -1,13 +1,23 @@
 {
-  "name": "voice-ajent",
+  "name": "ajent-chatbot",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "./dist-lib/agent-chat.umd.js",
+  "module": "./dist-lib/agent-chat.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist-lib/agent-chat.es.js",
+      "require": "./dist-lib/agent-chat.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "BUILD_MODE=library vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build:lib"
   },
   "dependencies": {
     "axios": "^1.8.4",
