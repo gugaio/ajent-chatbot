@@ -1,13 +1,79 @@
-# React + Vite
+# 🧠 AgentChat
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based, lightweight, fully customizable **AI Agent Chatbot UI Component** with optional **voice input and playback** support.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📜 Simple and elegant chat UI
+- 🎙️ Audio recording to text (speech-to-text) via `ajent`
+- 🔊 Audio playback of messages
+- 🎨 Fully customizable theming
+- 📦 Easy to embed into any React app
+- ⚡ Built with **Vite**, **TailwindCSS**, and **React 18**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# agent-chat
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+Ensure you also have ajent (or your preferred audio service) installed and configured.
+
+
+### 3. Run the Development Server
+```bash
+npm run dev
+# or
+yarn dev
+```
+### 4. Build for Production
+```bash
+npm run build
+# or
+yarn build
+```
+
+## 🧩 Usage
+You can directly use the exported AgentChat component in your app:
+
+```jsx
+import { AgentChat } from './path-to-agentchat';
+
+function App() {
+  const API_URL = 'http://your-api-url';
+  const API_TOKEN = 'your-api-token';
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <AgentChat apiUrl={API_URL} apiToken={API_TOKEN} />
+    </div>
+  );
+}
+```
+
+## Theming
+You can pass a custom theme prop to override the TailwindCSS classes used inside AgentChat.
+
+Default theme structure:
+
+```javascript
+{
+  container: "flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md",
+  header: "p-4 border-b border-gray-200",
+  title: "text-xl font-semibold text-gray-800",
+  messagesContainer: "flex-grow p-4 overflow-y-auto",
+  loadingContainer: "flex justify-start mb-4 animate-pulse",
+  loadingBubble: "flex space-x-2 p-3 bg-gray-200 rounded-xl",
+  loadingDot: "w-2 h-2 bg-gray-500 rounded-full",
+}
+```
+Override any of these individually by passing your own theme object.
+
+## 👨‍💻 Author
+Made with ❤️ by Gustavo Barros
