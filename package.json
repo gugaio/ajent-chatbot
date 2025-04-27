@@ -9,7 +9,8 @@
     ".": {
       "import": "./dist-lib/agent-chat.es.js",
       "require": "./dist-lib/agent-chat.umd.js"
-    }
+    },
+    "./styles": "./dist-lib/ajent-chatbot.css"
   },
   "scripts": {
     "dev": "vite",

@@ -2,8 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import AgentService from '../services/AgentService';
+import '../index.css';
 
-const AgentChat = ({ apiUrl, apiToken }) => {
+const AgentChat = ({ apiToken, theme = {}, apiUrl = null }) => {
+
+  const defaultTheme = {
+    container: "flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md",
+    header: "p-4 border-b border-gray-200",
+    title: "text-xl font-semibold text-gray-800",
+    messagesContainer: "flex-grow p-4 overflow-y-auto",
+    loadingContainer: "flex justify-start mb-4 animate-pulse",
+    loadingBubble: "flex space-x-2 p-3 bg-gray-200 rounded-xl",
+    loadingDot: "w-2 h-2 bg-gray-500 rounded-full",
+  };
+  
+  const mergedTheme = { ...defaultTheme, ...theme };
+
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'Hello! How can I help you today?', audioUrl: null }
   ]);
@@ -58,12 +72,12 @@ const AgentChat = ({ apiUrl, apiToken }) => {
   }, []);
 
   return (
-    <div className="flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md">
-      <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-semibold text-gray-800">Agent Chat</h1>
+    <div className={mergedTheme.container}>
+      <div className={mergedTheme.header}>
+        <h1 className={mergedTheme.title}>Agent Chat</h1>
       </div>
       
-      <div className="flex-grow p-4 overflow-y-auto">
+      <div className={mergedTheme.messagesContainer}>
         {messages.filter(msg => msg.role !== 'system').map((message, index) => (
           <ChatBubble
             key={index}
@@ -75,11 +89,11 @@ const AgentChat = ({ apiUrl, apiToken }) => {
         <div ref={messagesEndRef} />
         
         {isLoading && (
-          <div className="flex justify-start mb-4 animate-pulse">
-            <div className="flex space-x-2 p-3 bg-gray-200 rounded-xl">
-              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+          <div className={mergedTheme.loadingContainer}>
+            <div className={mergedTheme.loadingBubble}>
+              <div className={mergedTheme.loadingDot}></div>
+              <div className={mergedTheme.loadingDot}></div>
+              <div className={mergedTheme.loadingDot}></div>
             </div>
           </div>
         )}

@@ -85,7 +85,7 @@ const ChatInput = ({ onSendMessage, isLoading, setIsLoading }) => {
         <button
           type="submit"
           disabled={!message.trim() || isLoading || isRecording}
-          className={`flex-shrink-0 ml-2 p-2 rounded-full 
+          className={`flex-shrink-0 ml-2 p-2 rounded-full w-10
                    ${(!message.trim() || isLoading || isRecording) ? 'bg-gray-200 text-gray-400' : 'bg-blue-500 text-white hover:bg-blue-600'} 
                    transition-colors duration-200`}
         >
