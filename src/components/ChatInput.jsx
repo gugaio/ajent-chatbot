@@ -2,11 +2,11 @@
 import React, { useState, useRef } from 'react';
 import {Audio} from 'ajent';
 
-const ChatInput = ({ onSendMessage, isLoading, setIsLoading }) => {
+const ChatInput = ({ onSendMessage, audioService, isLoading, setIsLoading, apiToken, apiUrl = null }) => {
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const recorderRef = useRef(null);
-  const audio = useRef(new Audio());
+  const audio = useRef(audioService);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -18,7 +18,6 @@ const ChatInput = ({ onSendMessage, isLoading, setIsLoading }) => {
 
 
   const processAudio = async (audioBlob) => {
-    setIsLoading(true);
     try {
       const transcription = await audio.current.transcribeAudio(audioBlob);
       setMessage(transcription);
@@ -30,9 +29,7 @@ const ChatInput = ({ onSendMessage, isLoading, setIsLoading }) => {
         { role: 'assistant', content: "Sorry, I encountered an error processing your audio.", audioUrl: null }
       ]);
       throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   }
 
   const startRecording = async () => {

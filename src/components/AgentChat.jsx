@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
-import AgentService from '../services/AgentService';
 import '../index.css';
 
-const AgentChat = ({ apiToken, theme = {}, apiUrl = null }) => {
+const AgentChat = ({ onUserTextMessage, theme = {}, audio = null}) => {
 
   const defaultTheme = {
     container: "flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md",
@@ -22,7 +21,6 @@ const AgentChat = ({ apiToken, theme = {}, apiUrl = null }) => {
     { role: 'assistant', content: 'Hello! How can I help you today?', audioUrl: null }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const agentService = useRef(new AgentService());
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -39,7 +37,7 @@ const AgentChat = ({ apiToken, theme = {}, apiUrl = null }) => {
     setIsLoading(true);
     
     try {
-      const response = await agentService.current.sendMessage(content);
+      const response = onUserTextMessage(content);
       
       setMessages(prevMessages => [
         ...prevMessages, 
@@ -101,6 +99,7 @@ const AgentChat = ({ apiToken, theme = {}, apiUrl = null }) => {
       
       <ChatInput
         onSendMessage={handleSendMessage}
+        audioService={audio}
         isLoading={isLoading}
         setIsLoading={setIsLoading}
       />
