@@ -3,7 +3,7 @@ import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import '../index.css';
 
-const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='Hello! How can I help you today?', inputPlaceholder='Type your message...', theme = {}, audio = null}) => {
+const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='Hello! How can I help you today?', inputPlaceholder='Type your message...', transcribingMessage='Transcribing audio...', theme = {}, audio = null}) => {
 
   const defaultTheme = {
     container: "flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md",
@@ -103,6 +103,7 @@ const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='He
         isLoading={isLoading}
         setIsLoading={setIsLoading}
         inputPlaceholder={inputPlaceholder}
+        transcribingMessage={transcribingMessage}
       />
     </div>
   );

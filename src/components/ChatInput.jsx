@@ -1,8 +1,20 @@
 
 import React, { useState, useRef } from 'react';
-const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder }) => {
+
+const AudioLoadingIndicator = () => {
+  return (
+    <div className="flex items-center space-x-1 px-3 py-1 bg-gray-100 rounded-full">
+      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: "0ms" }}></div>
+      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: "300ms" }}></div>
+      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: "600ms" }}></div>
+    </div>
+  );
+};
+
+const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder, transcribingMessage }) => {
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const recorderRef = useRef(null);
   const audio = useRef(audioService);
 
@@ -17,8 +29,10 @@ const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder })
 
   const processAudio = async (audioBlob) => {
     try {
+      setIsTranscribing(true);
       const transcription = await audio.current.transcribeAudio(audioBlob);
       setMessage(transcription);
+      setIsTranscribing(false);
       setIsRecording(false);
     } catch (error) {
       console.error("Error processing audio:", error);
@@ -49,6 +63,7 @@ const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder })
   return (
     <div className="border-t border-gray-200 px-4 py-3 bg-white">
       <form onSubmit={handleSendMessage} className="flex items-center">
+        {audio.current ? (
         <button
           type="button"
           onClick={isRecording ? stopRecording : startRecording}
@@ -66,16 +81,24 @@ const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder })
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
           )}
-        </button>
+        </button>) : null}
+
+        {isTranscribing ? (
+          <div className="flex-grow flex items-center">
+            <AudioLoadingIndicator />
+            <span className="ml-2 text-sm text-gray-500">{transcribingMessage}</span>
+          </div>
+        ) : (
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={inputPlaceholder}
+            className="flex-grow py-2 px-4 outline-none bg-gray-100 rounded-full"
+            disabled={isLoading || isRecording || isTranscribing}
+          />
+        )}
         
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={inputPlaceholder}
-          className="flex-grow py-2 px-4 outline-none bg-gray-100 rounded-full"
-          disabled={isLoading || isRecording}
-        />
         
         <button
           type="submit"
