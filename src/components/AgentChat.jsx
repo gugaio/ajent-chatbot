@@ -3,7 +3,7 @@ import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import '../index.css';
 
-const AgentChat = ({ onUserTextMessage, theme = {}, audio = null}) => {
+const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='Hello! How can I help you today?', inputPlaceholder='Type your message...', theme = {}, audio = null}) => {
 
   const defaultTheme = {
     container: "flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md",
@@ -18,7 +18,7 @@ const AgentChat = ({ onUserTextMessage, theme = {}, audio = null}) => {
   const mergedTheme = { ...defaultTheme, ...theme };
 
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hello! How can I help you today?', audioUrl: null }
+    { role: 'assistant', content: welcomeMessage, audioUrl: null }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -37,7 +37,7 @@ const AgentChat = ({ onUserTextMessage, theme = {}, audio = null}) => {
     setIsLoading(true);
     
     try {
-      const response = onUserTextMessage(content);
+      const response = await onUserTextMessage(content);
       
       setMessages(prevMessages => [
         ...prevMessages, 
@@ -72,7 +72,7 @@ const AgentChat = ({ onUserTextMessage, theme = {}, audio = null}) => {
   return (
     <div className={mergedTheme.container}>
       <div className={mergedTheme.header}>
-        <h1 className={mergedTheme.title}>Agent Chat</h1>
+        <h1 className={mergedTheme.title}>{title}</h1>
       </div>
       
       <div className={mergedTheme.messagesContainer}>
@@ -102,6 +102,7 @@ const AgentChat = ({ onUserTextMessage, theme = {}, audio = null}) => {
         audioService={audio}
         isLoading={isLoading}
         setIsLoading={setIsLoading}
+        inputPlaceholder={inputPlaceholder}
       />
     </div>
   );

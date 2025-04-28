@@ -1,8 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import {Audio} from 'ajent';
-
-const ChatInput = ({ onSendMessage, audioService, isLoading, setIsLoading, apiToken, apiUrl = null }) => {
+const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder }) => {
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const recorderRef = useRef(null);
@@ -74,7 +72,7 @@ const ChatInput = ({ onSendMessage, audioService, isLoading, setIsLoading, apiTo
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message..."
+          placeholder={inputPlaceholder}
           className="flex-grow py-2 px-4 outline-none bg-gray-100 rounded-full"
           disabled={isLoading || isRecording}
         />
