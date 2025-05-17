@@ -3,7 +3,15 @@ import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import '../index.css';
 
-const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='Hello! How can I help you today?', inputPlaceholder='Type your message...', transcribingMessage='Transcribing audio...', theme = {}, audio = null}) => {
+const AgentChat = ({ 
+  onUserTextMessage, 
+  title = 'Agent Chat', 
+  welcomeMessage = 'Hello! How can I help you today?', 
+  inputPlaceholder = 'Type your message...', 
+  transcribingMessage = 'Transcribing audio...', 
+  theme = {}, 
+  audio = null 
+}) => {
 
   const defaultTheme = {
     container: "flex flex-col h-full max-w-2xl mx-auto bg-white rounded-lg shadow-md",
@@ -13,6 +21,8 @@ const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='He
     loadingContainer: "flex justify-start mb-4 animate-pulse",
     loadingBubble: "flex space-x-2 p-3 bg-gray-200 rounded-xl",
     loadingDot: "w-2 h-2 bg-gray-500 rounded-full",
+    streamingContainer: "flex justify-start mb-4",
+    streamingBubble: "p-3 bg-gray-200 rounded-xl",
   };
   
   const mergedTheme = { ...defaultTheme, ...theme };
@@ -21,27 +31,41 @@ const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='He
     { role: 'assistant', content: welcomeMessage, audioUrl: null }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingContent, setStreamingContent] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingContent]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Função para atualizar o conteúdo do streaming
+  const updateStreamingContent = (chunk) => {
+    setStreamingContent(prev => prev + chunk);
+  };
+
   const handleSendMessage = async (content) => {
     const newMessage = { role: 'user', content, audioUrl: null };
     setMessages(prevMessages => [...prevMessages, newMessage]);
-    setIsLoading(true);
+    
+    // Iniciar streaming ao invés de mostrar o loading padrão
+    setIsLoading(false);
+    setIsStreaming(true);
+    setStreamingContent('');
     
     try {
-      const response = await onUserTextMessage(content);
+      // Passa a função de callback que atualiza o conteúdo em streaming
+      // O componente pai deve chamar essa função para cada chunk recebido
+      const finalResponse = await onUserTextMessage(content, updateStreamingContent);
       
+      // Quando a resposta completa estiver pronta, adiciona à lista de mensagens
       setMessages(prevMessages => [
         ...prevMessages, 
-        { role: 'assistant', content: response}
+        { role: 'assistant', content: finalResponse || streamingContent }
       ]);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -50,7 +74,8 @@ const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='He
         { role: 'assistant', content: "Sorry, I encountered an error processing your request.", audioUrl: null }
       ]);
     } finally {
-      setIsLoading(false);
+      setIsStreaming(false);
+      setStreamingContent('');
     }
   };
 
@@ -84,9 +109,18 @@ const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='He
             audioUrl={message.audioUrl}
           />
         ))}
-        <div ref={messagesEndRef} />
         
-        {isLoading && (
+        {/* Mostra o conteúdo em streaming */}
+        {isStreaming && streamingContent && (
+          <div className={mergedTheme.streamingContainer}>
+            <div className={mergedTheme.streamingBubble}>
+              {streamingContent}
+            </div>
+          </div>
+        )}
+        
+        {/* Mostra o loading tradicional se necessário */}
+        {isLoading && !isStreaming && (
           <div className={mergedTheme.loadingContainer}>
             <div className={mergedTheme.loadingBubble}>
               <div className={mergedTheme.loadingDot}></div>
@@ -95,12 +129,14 @@ const AgentChat = ({ onUserTextMessage, title = 'Agent Chat', welcomeMessage='He
             </div>
           </div>
         )}
+        
+        <div ref={messagesEndRef} />
       </div>
       
       <ChatInput
         onSendMessage={handleSendMessage}
         audioService={audio}
-        isLoading={isLoading}
+        isLoading={isLoading || isStreaming} // Desabilitar input durante streaming também
         setIsLoading={setIsLoading}
         inputPlaceholder={inputPlaceholder}
         transcribingMessage={transcribingMessage}

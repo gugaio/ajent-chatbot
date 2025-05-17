@@ -1,0 +1,11 @@
+.DS_Store
+node_modules
+/dist # if you have a separate demo app build
+/public
+vite.config.js
+tsconfig.json
+tsconfig.node.json
+.eslintrc.cjs
+.gitignore
+*.log
+src/ 
