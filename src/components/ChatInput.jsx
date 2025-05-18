@@ -94,7 +94,7 @@ const ChatInput = ({ onSendMessage, audioService, isLoading, inputPlaceholder, t
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={inputPlaceholder}
-            className="flex-grow py-2 px-4 outline-none bg-gray-100 rounded-full"
+            className="flex-grow py-2 px-4 outline-none bg-gray-100 rounded-full text-gray-800"
             disabled={isLoading || isRecording || isTranscribing}
           />
         )}
