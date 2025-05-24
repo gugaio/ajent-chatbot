@@ -14,18 +14,27 @@ export default defineConfig({
       fileName: (format) => `agent-chat.${format}.js`
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'axios'],
+      external: ['react', 'react-dom', 'axios', 'react/jsx-runtime'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
           axios: 'axios'
-        }
+        },
+        sourcemap: true // Enable sourcemaps for library build
       }
     },
-    outDir: 'dist-lib' // Different output directory for library
+    sourcemap: true, // Generates .js.map files
+    minify: false, // Optional: Disable minification for better debugging
+    outDir: 'dist-lib'
   } : {
     // Regular app build configuration
-    outDir: 'dist' // Your current app build directory
+    sourcemap: true, // Enable sourcemaps for app build
+    minify: 'terser', // Keep minification but still generate sourcemaps
+    terserOptions: {
+      keep_classnames: true, // Optional: Helps with debugging
+      keep_fnames: true // Optional: Helps with debugging
+    },
+    outDir: 'dist'
   }
 });
