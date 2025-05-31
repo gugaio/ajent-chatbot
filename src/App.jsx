@@ -9,8 +9,8 @@ function App() {
   const API_TOKEN = import.meta.env.VITE_AJENT_API_TOKEN;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-2xl h-[600px] shadow-lg rounded-lg overflow-hidden">
+    <div className="min-h-screen bg-neutral-800 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-4xl h-full max-h-[calc(100vh-80px)] shadow-lg rounded-lg overflow-hidden">
         <AgentChat apiUrl={API_URL} apiToken={API_TOKEN} />
       </div>
     </div>

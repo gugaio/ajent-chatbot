@@ -45,26 +45,26 @@ const ChatBubble = ({ message, isUser, audioUrl }) => {
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-      <div className="flex items-end">
+      <div className={`flex items-end ${!isUser ? 'flex-grow' : ''}`}>
         {!isUser && audioUrl && (
           <div className="mr-2">
             <AudioButton audioUrl={audioUrl} />
           </div>
         )}
         
-        <div className={`py-3 px-4 rounded-xl max-w-xs lg:max-w-md ${
+        <div className={`py-3 px-4 my-2 rounded-xl font-medium inline-block  ${
           isUser 
-            ? 'bg-blue-500 text-white rounded-br-none' 
-            : 'bg-gray-200 text-gray-800 rounded-bl-none'
+            ? 'bg-gradient-to-r from-orange-700 to-amber-600 text-white rounded-br-none max-w-xs lg:max-w-md' 
+            : 'text-gray-800 flex-grow text-left '
         }`}>
           <p className="text-sm break-words">
-              <div
-            ref={messageRef}
-            className="message-content"
-            dangerouslySetInnerHTML={{
-              __html: formatMessage(message.content),
-            }}
-          />
+            <div
+              ref={messageRef}
+              className="message-content"
+              dangerouslySetInnerHTML={{
+                __html: formatMessage(message.content),
+              }}
+            />
           </p>
         </div>
         
