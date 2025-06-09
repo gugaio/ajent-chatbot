@@ -15,8 +15,6 @@ const AgentChat = ({
 
   const defaultTheme = {
     container: "flex flex-col h-full max-w-4xl mx-auto bg-white rounded-lg shadow-md",
-    header: "p-4 border-b border-gray-200",
-    title: "text-xl font-semibold text-gray-800 text-center",
     messagesContainer: "flex-grow p-4 overflow-y-auto",
     loadingContainer: "flex justify-start mb-4 animate-pulse",
     loadingBubble: "flex space-x-2 p-3 bg-gray-200 rounded-xl",
@@ -31,51 +29,96 @@ const AgentChat = ({
     { role: 'assistant', content: welcomeMessage, audioUrl: null }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [streamingContent, setStreamingContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, streamingContent]);
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Função para atualizar o conteúdo do streaming
-  const updateStreamingContent = (chunk) => {
-    setStreamingContent(prev => prev + chunk);
+  // Função para atualizar o conteúdo do streaming - sempre atualiza a última mensagem
+  const updateStreamingContent = (newContent) => {
+    console.log("Updating streaming content:", newContent);
+    setMessages((prevMessages) => {
+      const messages = [...prevMessages];
+      const lastIndex = messages.length - 1;
+      
+      // Atualiza a última mensagem (que sempre será do assistant)
+      if (lastIndex >= 0) {
+        messages[lastIndex] = {
+          ...messages[lastIndex],
+          content: messages[lastIndex].content + newContent,
+        };
+      }
+      
+      return messages;
+    });
+  };
+
+  const updateStreamingThinking = (newContent) => {
+    console.log("Updating streaming content:", newContent);
+    setMessages((prevMessages) => {
+      const messages = [...prevMessages];
+      const lastIndex = messages.length - 1;
+      
+      // Atualiza a última mensagem (que sempre será do assistant)
+      if (lastIndex >= 0) {
+        messages[lastIndex] = {
+          ...messages[lastIndex],
+          thinking: messages[lastIndex].thinking + newContent,
+        };
+      }
+      
+      return messages;
+    });
   };
 
   const handleSendMessage = async (content) => {
-    const newMessage = { role: 'user', content, audioUrl: null };
-    setMessages(prevMessages => [...prevMessages, newMessage]);
+    const newMessage = { role: 'user', content, thinking: '', audioUrl: null };
+    const emptyAssistantMessage = { role: 'assistant', content: '', thinking: '', audioUrl: null };
     
-    // Iniciar streaming ao invés de mostrar o loading padrão
-    setIsLoading(false);
+    // Adiciona a mensagem do usuário E a mensagem vazia do assistente de uma vez
+    setMessages(prevMessages => [...prevMessages, newMessage, emptyAssistantMessage]);
+    
+    // Iniciar streaming
     setIsStreaming(true);
-    setStreamingContent('');
     
     try {
-      // Passa a função de callback que atualiza o conteúdo em streaming
-      // O componente pai deve chamar essa função para cada chunk recebido
-      const finalResponse = await onUserTextMessage(content, updateStreamingContent);
+      // A mensagem vazia do assistant já está lá, updateStreamingContent sempre pega a última
+      const finalResponse = await onUserTextMessage(content, updateStreamingContent, updateStreamingThinking);
       
-      // Quando a resposta completa estiver pronta, adiciona à lista de mensagens
-      setMessages(prevMessages => [
-        ...prevMessages, 
-        { role: 'assistant', content: finalResponse || streamingContent }
-      ]);
+      // SEMPRE substitui pelo finalResponse (caso o stream não tenha sido chamado)
+      if (finalResponse) {
+        console.log("Final response received:", finalResponse);
+        setMessages(prevMessages => {
+          const updatedMessages = [...prevMessages];
+          const lastIndex = updatedMessages.length - 1;
+          updatedMessages[lastIndex] = {
+            content: finalResponse || updatedMessages[lastIndex].content,
+            thinking: updatedMessages[lastIndex].thinking
+          };
+          return updatedMessages;
+        });
+      }
     } catch (error) {
       console.error("Error sending message:", error);
-      setMessages(prevMessages => [
-        ...prevMessages, 
-        { role: 'assistant', content: "Sorry, I encountered an error processing your request.", audioUrl: null }
-      ]);
+      
+      // Substitui a última mensagem (que seria a vazia) por uma de erro
+      setMessages(prevMessages => {
+        const updatedMessages = [...prevMessages];
+        const lastIndex = updatedMessages.length - 1;
+        updatedMessages[lastIndex] = {
+          ...updatedMessages[lastIndex],
+          content: "Sorry, I encountered an error processing your request."
+        };
+        return updatedMessages;
+      });
     } finally {
       setIsStreaming(false);
-      setStreamingContent('');
     }
   };
 
@@ -84,22 +127,18 @@ const AgentChat = ({
     const handleAudioRecording = async (recorder) => {
       try {
         const audioBlob = await recorder;
-        await handleSendAudio.processAudio(audioBlob);
+        // Assumindo que você tem uma função handleSendAudio definida em algum lugar
+        // await handleSendAudio.processAudio(audioBlob);
       } catch (error) {
         console.error("Audio recording error:", error);
       }
     };
     
-    // The actual recording starts in the ChatInput component and is processed here
     return () => {};
   }, []);
 
   return (
-    <div className={mergedTheme.container}>
-      <div className={mergedTheme.header}>
-        <h1 className={mergedTheme.title}>{title}</h1>
-      </div>
-      
+    <div className={mergedTheme.container}>      
       <div className={mergedTheme.messagesContainer}>
         {messages.filter(msg => msg.role !== 'system').map((message, index) => (
           <ChatBubble
@@ -109,15 +148,6 @@ const AgentChat = ({
             audioUrl={message.audioUrl}
           />
         ))}
-        
-        {/* Mostra o conteúdo em streaming */}
-        {isStreaming && streamingContent && (
-          <div className={mergedTheme.streamingContainer}>
-            <div className={mergedTheme.streamingBubble}>
-              {streamingContent}
-            </div>
-          </div>
-        )}
         
         {/* Mostra o loading tradicional se necessário */}
         {isLoading && !isStreaming && (
@@ -136,7 +166,7 @@ const AgentChat = ({
       <ChatInput
         onSendMessage={handleSendMessage}
         audioService={audio}
-        isLoading={isLoading || isStreaming} // Desabilitar input durante streaming também
+        isLoading={isLoading || isStreaming}
         setIsLoading={setIsLoading}
         inputPlaceholder={inputPlaceholder}
         transcribingMessage={transcribingMessage}

@@ -11,7 +11,10 @@ function App() {
   return (
     <div className="min-h-screen bg-neutral-800 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-4xl h-full max-h-[calc(100vh-80px)] shadow-lg rounded-lg overflow-hidden">
-        <AgentChat apiUrl={API_URL} apiToken={API_TOKEN} />
+      <div className='p-4'>
+        <h1 className='text-xl font-semibold text-white text-center'>Agent Chat</h1>
+      </div>
+        <AgentChat apiToken={API_TOKEN} />
       </div>
     </div>
   );

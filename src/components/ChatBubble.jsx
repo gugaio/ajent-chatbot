@@ -57,15 +57,27 @@ const ChatBubble = ({ message, isUser, audioUrl }) => {
             ? 'bg-gradient-to-r from-orange-700 to-amber-600 text-white rounded-br-none max-w-xs lg:max-w-md' 
             : 'text-gray-800 flex-grow text-left '
         }`}>
-          <p className="text-sm break-words">
-            <div
-              ref={messageRef}
-              className="message-content"
-              dangerouslySetInnerHTML={{
-                __html: formatMessage(message.content),
-              }}
-            />
-          </p>
+          {/* Thinking bubble */}
+  {message.thinking && (
+    <div className="bg-gray-100 text-gray-600 text-xs p-3 mb-2 rounded-lg border border-gray-200">
+      <div
+        className="whitespace-pre-wrap"
+        dangerouslySetInnerHTML={{
+          __html: formatMessage(message.thinking),
+        }}
+      />
+    </div>
+  )}
+
+  {/* Main content message */}
+  <div className="text-sm break-words">
+    <div
+      className="message-content whitespace-pre-wrap"
+      dangerouslySetInnerHTML={{
+        __html: formatMessage(message.content),
+      }}
+    />
+  </div>
         </div>
         
         {isUser && audioUrl && (
