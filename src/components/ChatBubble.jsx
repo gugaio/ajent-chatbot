@@ -59,7 +59,7 @@ const ChatBubble = ({ message, isUser, audioUrl }) => {
         }`}>
           {/* Thinking bubble */}
   {message.thinking && (
-    <div className="bg-gray-100 text-gray-600 text-xs p-3 mb-2 rounded-lg border border-gray-200">
+    <div className="bg-gray-100 break-words text-gray-600 text-xs p-3 mb-2 rounded-lg border border-gray-200">
       <div
         className="whitespace-pre-wrap"
         dangerouslySetInnerHTML={{

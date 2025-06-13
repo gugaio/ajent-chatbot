@@ -1,6 +1,6 @@
 {
   "name": "ajent-chatbot",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "type": "module",
   "main": "./dist-lib/agent-chat.umd.js",
   "module": "./dist-lib/agent-chat.es.js",

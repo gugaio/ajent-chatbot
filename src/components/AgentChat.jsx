@@ -14,7 +14,7 @@ const AgentChat = ({
 }) => {
 
   const defaultTheme = {
-    container: "flex flex-col h-full max-w-4xl mx-auto bg-white rounded-lg shadow-md",
+    container: "flex flex-col max-h-[90vh] max-w-4xl mx-auto bg-white rounded-lg shadow-md",
     messagesContainer: "flex-grow p-4 overflow-y-auto",
     loadingContainer: "flex justify-start mb-4 animate-pulse",
     loadingBubble: "flex space-x-2 p-3 bg-gray-200 rounded-xl",
