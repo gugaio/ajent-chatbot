@@ -41,36 +41,27 @@ const AgentChat = ({
   };
 
   // Função para atualizar o conteúdo do streaming - sempre atualiza a última mensagem
-  const updateStreamingContent = (newContent) => {
+  const streamCallback = (newContent, isReasoning) => {
     console.log("Updating streaming content:", newContent);
     setMessages((prevMessages) => {
       const messages = [...prevMessages];
       const lastIndex = messages.length - 1;
       
       // Atualiza a última mensagem (que sempre será do assistant)
-      if (lastIndex >= 0) {
-        messages[lastIndex] = {
-          ...messages[lastIndex],
-          content: messages[lastIndex].content + newContent,
-        };
-      }
-      
-      return messages;
-    });
-  };
-
-  const updateStreamingThinking = (newContent) => {
-    console.log("Updating streaming content:", newContent);
-    setMessages((prevMessages) => {
-      const messages = [...prevMessages];
-      const lastIndex = messages.length - 1;
-      
-      // Atualiza a última mensagem (que sempre será do assistant)
-      if (lastIndex >= 0) {
-        messages[lastIndex] = {
-          ...messages[lastIndex],
-          thinking: messages[lastIndex].thinking + newContent,
-        };
+      if( isReasoning) {
+        if (lastIndex >= 0) {
+          messages[lastIndex] = {
+            ...messages[lastIndex],
+            thinking: messages[lastIndex].thinking + newContent,
+          };
+        }
+      }else {
+        if (lastIndex >= 0) {
+          messages[lastIndex] = {
+            ...messages[lastIndex],
+            content: messages[lastIndex].content + newContent,
+          };
+        }
       }
       
       return messages;
@@ -89,10 +80,10 @@ const AgentChat = ({
     
     try {
       // A mensagem vazia do assistant já está lá, updateStreamingContent sempre pega a última
-      const finalResponse = await onUserTextMessage(content, updateStreamingContent, updateStreamingThinking);
+      const finalResponse = await onUserTextMessage(content, streamCallback);
       
       // SEMPRE substitui pelo finalResponse (caso o stream não tenha sido chamado)
-      if (finalResponse) {
+      /*if (finalResponse) {
         console.log("Final response received:", finalResponse);
         setMessages(prevMessages => {
           const updatedMessages = [...prevMessages];
@@ -103,7 +94,7 @@ const AgentChat = ({
           };
           return updatedMessages;
         });
-      }
+      }*/
     } catch (error) {
       console.error("Error sending message:", error);
       
